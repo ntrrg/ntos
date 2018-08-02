@@ -18,8 +18,6 @@ main() {
   TARGET="$1"
   . "$CONFIG"
   
-  cp -r image-template image
-
   replace_values "Hostname" "$HOSTNAME" "$TARGET"
   replace_values "Username" "$USERNAME" "$TARGET"
   replace_values "Timezone" "$TIMEZONE" "$TARGET"
