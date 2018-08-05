@@ -1,0 +1,13 @@
+os: linux
+dist: trusty
+sudo: required
+git:
+  depth: 1
+language: bash
+branches:
+  only:
+  - master
+before_script:
+  - sudo apt-get install -qy debootstrap make
+script:
+  - sudo make

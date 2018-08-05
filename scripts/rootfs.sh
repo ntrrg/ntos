@@ -4,7 +4,7 @@ set -e
 
 ROOTFS=${ROOTFS:-rootfs}
 
-if [ ! -d rootfs ]; then
+if [ ! -d "$ROOTFS" ]; then
   debootstrap --variant=minbase --include="
     btrfs-progs,
     cryptsetup,
@@ -15,8 +15,10 @@ if [ ! -d rootfs ]; then
     locales,
     lvm2,
     systemd-sysv
-  " buster "$ROOTFS"/ http://deb.debian.org/debian
+  " buster "$ROOTFS" http://deb.debian.org/debian
 fi
+
+mount -o bind /proc "$ROOTFS/proc"
 
 chroot "$ROOTFS" localedef \
   -ci en_US \
@@ -24,39 +26,37 @@ chroot "$ROOTFS" localedef \
   -A /usr/share/locale/locale.alias \
 en_US.UTF-8
 
-cat <<EOF > "$ROOTFS"/etc/apt/sources.list
+cat <<EOF > "$ROOTFS/etc/apt/sources.list"
 deb http://deb.debian.org/debian buster main contrib non-free
 EOF
 
 chroot "$ROOTFS" apt-get update
 DEBIAN_FRONTEND=noninteractive chroot "$ROOTFS" apt-get upgrade -qy
 
-echo "CRYPTSETUP=y" >> "$ROOTFS"/etc/cryptsetup-initramfs/conf-hook
-
-mount -o bind /proc "$ROOTFS/proc"
+echo "CRYPTSETUP=y" >> "$ROOTFS/etc/cryptsetup-initramfs/conf-hook"
 chroot "$ROOTFS" update-initramfs -u
-umount "$ROOTFS/proc"
 
-mv \
-  "$ROOTFS"/usr/share/i18n/locales/en_US \
-  "$ROOTFS"/usr/share/i18n/locales/en_GB \
-  "$ROOTFS"/usr/share/locale/locale.alias \
-  "$ROOTFS"/tmp/
+chroot "$ROOTFS" mv \
+  /usr/share/i18n/locales/en_GB \
+  /usr/share/i18n/locales/en_US \
+  /usr/share/locale/locale.alias \
+  /tmp/
 
-rm -rf \
-  "$ROOTFS"/root/.bash_history \
-  "$ROOTFS"/usr/share/i18n/locales/??_* \
-  "$ROOTFS"/usr/share/i18n/locales/???_* \
-  "$ROOTFS"/usr/share/i18n/locales/eo \
-  "$ROOTFS"/usr/share/i18n/locales/iso14651_t1_pinyin \
-  "$ROOTFS"/usr/share/locale/* \
-  "$ROOTFS"/usr/share/man/?? \
-  "$ROOTFS"/usr/share/man/??_* \
-  "$ROOTFS"/var/cache/apt/* \
-  "$ROOTFS"/var/lib/apt/lists/* \
-  "$ROOTFS"/var/log/*
+chroot "$ROOTFS" rm -rf \
+  /usr/share/i18n/locales/??_* \
+  /usr/share/i18n/locales/???_* \
+  /usr/share/i18n/locales/eo \
+  /usr/share/i18n/locales/iso14651_t1_pinyin \
+  /usr/share/locale/* \
+  /usr/share/man/?? \
+  /usr/share/man/??_* \
+  /var/cache/apt/* \
+  /var/lib/apt/lists/* \
+  /var/log/*
 
-mv "$ROOTFS"/tmp/en_* "$ROOTFS"/usr/share/i18n/locales/
-mv "$ROOTFS"/tmp/locale.alias "$ROOTFS"/usr/share/locale/
+chroot "$ROOTFS" mv /tmp/en_GB /tmp/en_US /usr/share/i18n/locales/
+chroot "$ROOTFS" mv /tmp/locale.alias /usr/share/locale/
 
 chroot "$ROOTFS" echo "root:root" | chpasswd
+rm -f "$ROOTFS/root/.bash_history"
+umount "$ROOTFS/proc"

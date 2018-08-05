@@ -1,0 +1,1 @@
+rootfs := /tmp/rootfs
