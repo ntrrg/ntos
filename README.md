@@ -204,7 +204,7 @@ label start
   menu label ^Start
   kernel live/vmlinuz
   initrd live/initrd.img
-  append boot=live components noroot noautologin hostname=NtFlash username=ntrrg timezone=America/Caracas quiet persistence persistence-encryption=luks
+  append boot=live components quiet persistence persistence-encryption=luks
 
 menu begin install
   menu label ^Install Debian Buster
@@ -260,7 +260,7 @@ label start
   menu label ^Start
   kernel /EFI/boot/live/vmlinuz
   initrd /EFI/boot/live/initrd.img
-  append boot=live components noroot noautologin hostname=NtFlash username=ntrrg timezone=America/Caracas quiet persistence persistence-encryption=luks
+  append boot=live components quiet persistence persistence-encryption=luks
 
 menu begin install
   menu label ^Install Debian Buster
@@ -291,151 +291,181 @@ menu end
 EOF
 ```
 
-## USB Bootable
+## Installation
+
+**Note:** the approach in this section is intended for minimal usage (even 4GB
+memories may be used), but users could use any approach that fits their needs).
 
 ```shell-session
-# apt install \
-  btrfs-tools \
-  cryptsetup \
-  debootstrap \
-  dosfstools \
-  lvm2 \
-  syslinux \
-  syslinux-efi
+# apt install cryptsetup dosfstools fdisk syslinux
 ```
 
 ```shell-session
-$ mkdir ntos
-$ cd ntos
-$ lsblk
-# dd if=/dev/zero of=<unidad> bs=1048576 count=1
-# fdisk <unidad>
+# dd if=/dev/zero of=/dev/sdX bs=1048576 count=1
 ```
+
+```shell-session
+# fdisk /dev/sdX
+```
+
+---
+
+### DOS
 
 ```text
 p - Asegurarse de que es la unidad
 o - Crear tabla de particiones DOS
-n - Crear partición de almacenamiento compatible
+n - Crear partición de arranque
   p - Usar partición primaria
   1 - Asignar número de partición
   \n - Especificar sector inicial
-  +4G - Asignar 4GB
+  +512M - Asignar 512MB
 t - Cambiar el tipo de partición
-  c - Seleccionar el tipo "W95 FAT32 (LBA)"
-n - Crear partición de arranque
-  p - Usar partición primaria
-  2 - Asignar número de partición
-  \n - Especificar sector inicial
-  +2G - Asignar 2GB
-t - Cambiar el tipo de partición
-  2 - Seleccionar la segunda partición
   ef - Seleccionar el tipo "EFI (FAT-12/16/32)"
-a - Activar marca de arranque
-  2 - Seleccionar la segunda partición
+a - Activar marca de arranque para BIOS
 n - Crear partición de persistencia
   p - Usar partición primaria
-  3 - Asignar número de partición
-  \n - Especificar sector inicial
-  +15G - Asignar 15GB
-n - Crear partición para datos
-  p - Usar partición primaria
-  4 - Asignar número de partición
+  2 - Asignar número de partición
   \n - Especificar sector inicial
   \n - Asignar el espacio restante
 w - Guardar y salir
 ```
 
 ```shell-session
-mkfs.fat -F 32 -n NTRRG /dev/sdX1
-
-mkfs.fat -F 32 -n NTFLASH-OS /dev/sdX2
-mount /dev/sdX2 /mnt/
-cp -r /tmp/image/* /mnt/
-umount /mnt/
-syslinux -id syslinux /dev/sdX2
-dd if=/usr/lib/SYSLINUX/mbr.bin of=/dev/sdX bs=440 count=1
-
-cryptsetup --verify-passphrase luksFormat /dev/sdX3
-cryptsetup luksOpen /dev/sdX3 Persistence
-mkfs.ext4 -L persistence /dev/mapper/Persistence
-mount /dev/mapper/Persistence /mnt/
-echo "/etc union
-/home union
-/opt union
-/root union
-/usr union
-/var union" > /mnt/persistence.conf
-umount /mnt
-cryptsetup luksClose /dev/mapper/Persistence
-
-vgcreate NtFlash /dev/sdX4
-lvcreate -L 80G -n Data NtFlash
-mkfs.btrfs -L NtFlash /dev/NtFlash/Data
-vgchange -a n NtFlash
+# dd if=/usr/lib/SYSLINUX/mbr.bin of=/dev/sdX bs=440 count=1
 ```
+
+### GPT
 
 ```text
 p - Asegurarse de que es la unidad
 g - Crear tabla de particiones GPT
-n - Crear partición ESP
+n - Crear partición de arranque
     1 - Asignar número de partición
     \n - Especificar sector inicial
-    +2G - Asignar 2GB
+    +512M - Asignar 512MB
 t - Cambiar el tipo de partición
     1 - Seleccionar el tipo "EFI System"
 x - Entrar en modo experto
-    A - Activar flag de boot para soporte a MBR
+    A - Activar marca de arranque para BIOS
     r - Regresar al menú normal
-n - Crear partición para LVM
+n - Crear partición de persistencia
     2 - Asignar número de partición
     \n - Especificar sector inicial
     \n - Asignar el espacio restante
-t - Cambiar el tipo de partición
-    2 - Seleccionar la segunda partición
-    31 - Seleccionar el tipo "Linux LVM"
 w - Guardar y salir
 ```
 
 ```shell-session
-mkfs.fat -F 32 -n NTFLASH /dev/sdX1
-mount /dev/sdX1 /mnt/
-cp -r /tmp/image/* /mnt/
-umount /mnt/
-syslinux -id syslinux /dev/sdX1
-dd if=/usr/lib/SYSLINUX/gptmbr.bin of=/dev/sdX bs=440 count=1
-
-vgcreate NtDisk <segunda partición>
-lvcreate --size <tamaño> --name NtOS NtDisk
-
-cryptsetup --verify-passphrase luksFormat /dev/NtDisk/NtOS
-cryptsetup luksOpen /dev/NtDisk/NtOS NtOS
-
-mkfs.ext4 -L NtOS-Persistence /dev/mapper/NtOS
-mount /dev/mapper/NtOS /mnt/
-echo "/etc union
-/home union
-/opt union
-/root union
-/usr union
-/var union" | tee /mnt/persistence.conf
-
-umount /mnt
-cryptsetup luksClose /dev/mapper/NtOS
-vgchange -a n NtDisk
+# dd if=/usr/lib/SYSLINUX/gptmbr.bin of=/dev/sdX bs=440 count=1
 ```
 
-man live-boot
-man live-config
-man persistence.conf
+---
 
-http://cosmolinux.no-ip.org/raconetlinux2/persistence.html
-http://docs.kali.org/downloading/kali-linux-live-usb-persistence
-http://willhaley.com/blog/create-a-custom-debian-live-environment/
-https://wiki.debian.org/ReduceDebian
-https://debian-live.alioth.debian.org/live-manual/stable/manual/html/live-manual.en.html
-http://willhaley.com/blog/install-debian-usb/
-https://wiki.archlinux.org/index.php/syslinux
-http://www.syslinux.org/wiki/index.php
+```shell-session
+# mkfs.fat -F 32 -n NTOS /dev/sdX1
+```
 
-https://phenobarbital.wordpress.com/2011/05/13/linux-debiancanaima-en-soneview-n110-mini-laptop-classmate/
-https://phenobarbital.wordpress.com/2011/07/13/debian-se-puede-tener-un-gnome-minimo/
+```shell-session
+# mount /dev/sdX1 /mnt/
+```
+
+```shell-session
+# cp -r /tmp/image/* /mnt/
+```
+
+```shell-session
+# umount /mnt/
+```
+
+```shell-session
+# syslinux -id syslinux /dev/sdX1
+```
+
+```shell-session
+# cryptsetup --verify-passphrase luksFormat /dev/sdX2
+```
+
+```shell-session
+# cryptsetup luksOpen /dev/sdX2 Persistence
+```
+
+```shell-session
+# mkfs.ext4 -L persistence /dev/mapper/Persistence
+```
+
+```shell-session
+# mount /dev/mapper/Persistence /mnt/
+```
+
+```shell-session
+# echo "/ union" > /mnt/persistence.conf 
+```
+
+```shell-session
+# umount /mnt
+```
+
+```shell-session
+# cryptsetup luksClose /dev/mapper/Persistence
+```
+
+## Acknowledgment
+
+Working on this project I use/used:
+
+* [Debian](https://www.debian.org/)
+
+* [XFCE](https://xfce.org/)
+
+* [st](https://st.suckless.org/)
+
+* [Zsh](http://www.zsh.org/)
+
+* [GNU Screen](https://www.gnu.org/software/screen)
+
+* [Git](https://git-scm.com/)
+
+* [EditorConfig](http://editorconfig.org/)
+
+* [Vim](https://www.vim.org/)
+
+* [GNU make](https://www.gnu.org/software/make/)
+
+* [Chrome](https://www.google.com/chrome/browser/desktop/index.html)
+
+* [Gogs](https://gogs.io/)
+
+* [Github](https://github.com)
+
+```shell-session
+$ man live-boot
+```
+
+```shell-session
+$ man live-config
+```
+
+```shell-session
+$ man persistence.conf
+```
+
+<http://cosmolinux.no-ip.org/raconetlinux2/persistence.html>
+
+<http://docs.kali.org/downloading/kali-linux-live-usb-persistence>
+
+<http://willhaley.com/blog/create-a-custom-debian-live-environment/>
+
+<https://wiki.debian.org/ReduceDebian>
+
+<https://debian-live.alioth.debian.org/live-manual/stable/manual/html/live-manual.en.html>
+
+<http://willhaley.com/blog/install-debian-usb/>
+
+<https://wiki.archlinux.org/index.php/syslinux>
+
+<http://www.syslinux.org/wiki/index.php>
+
+<https://phenobarbital.wordpress.com/2011/05/13/linux-debiancanaima-en-soneview-n110-mini-laptop-classmate/>
+
+<https://phenobarbital.wordpress.com/2011/07/13/debian-se-puede-tener-un-gnome-minimo/>
