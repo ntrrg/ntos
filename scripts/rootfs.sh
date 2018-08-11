@@ -2,7 +2,28 @@
 
 set -e
 
-ROOTFS=${ROOTFS:-rootfs}
+ROOTFS=${ROOTFS:-/tmp/rootfs}
+MIRROR=${MIRROR:-http://deb.debian.org/debian}
+
+on_error() {
+  trap - INT EXIT TERM
+
+  if [ -f /tmp/.building-rootfs ]; then
+    umount "$ROOTFS/proc" "$ROOTFS/sys" || true
+    rm -rf /tmp/.building-rootfs "$ROOTFS"
+    return 1
+  fi
+
+  return 0
+}
+
+trap on_error INT EXIT TERM
+
+CHROOT() {
+  DEBIAN_FRONTEND=noninteractive chroot "$ROOTFS" $@
+}
+
+echo "" > /tmp/.building-rootfs
 
 if [ ! -d "$ROOTFS" ]; then
   debootstrap --variant=minbase --include="
@@ -10,39 +31,82 @@ if [ ! -d "$ROOTFS" ]; then
     cryptsetup,
     dosfstools,
     linux-image-amd64,
-    live-boot,
-    live-config,
     locales,
     lvm2,
     systemd-sysv
-  " buster "$ROOTFS" http://deb.debian.org/debian
+  " buster "$ROOTFS" "$MIRROR"
 fi
 
 mount -o bind /proc "$ROOTFS/proc"
+mount -o bind /sys "$ROOTFS/sys"
 
-chroot "$ROOTFS" localedef \
+cat <<EOF > "$ROOTFS/etc/apt/sources.list"
+deb $MIRROR buster main contrib non-free
+EOF
+
+CHROOT localedef \
   -ci en_US \
   -f UTF-8 \
   -A /usr/share/locale/locale.alias \
 en_US.UTF-8
 
-cat <<EOF > "$ROOTFS/etc/apt/sources.list"
-deb http://deb.debian.org/debian buster main contrib non-free
+CHROOT apt-get update
+CHROOT apt-get upgrade -qy
+CHROOT apt-get autoremove -y
+
+CHROOT apt-get install -qy live-boot live-config
+
+cat <<EOF > "$ROOTFS/etc/cryptsetup-initramfs/conf-hook"
+#
+# Configuration file for the cryptroot initramfs hook.
+#
+
+#
+# CRYPTSETUP: [ y | n ]
+#
+# Add cryptsetup and its dependencies to the initramfs image, regardless
+# of _this_ machine configuration.  By default, they're only added when
+# a device is detected that needs to be unlocked at initramfs stage
+# (such as root or resume devices or ones with explicit 'initramfs' flag
+# in /etc/crypttab).
+# Note: Honoring this setting will be deprecated in the future.  Please
+# uninstall the 'cryptsetup-initramfs' package if you don't want the
+# cryptsetup initramfs integration.
+#
+
+CRYPTSETUP=y
+
+#
+# KEYFILE_PATTERN: ...
+#
+# The value of this variable is interpreted as a shell pattern.
+# Matching key files from the crypttab(5) are included in the initramfs
+# image.  The associated devices can then be unlocked without manual
+# intervention.  (For instance if /etc/crypttab lists two key files
+# /etc/keys/{root,swap}.key, you can set KEYFILE_PATTERN="/etc/keys/*.key"
+# to add them to the initrd.)
+#
+# If KEYFILE_PATTERN if null or unset (default) then no key file is
+# copied to the initramfs image.
+#
+# WARNING: If the initramfs image is to include private key material,
+# you'll want to create it with a restrictive umask in order to keep
+# non-privileged users at bay.  For instance, set UMASK=0077 in
+# /etc/initramfs-tools/initramfs.conf
+#
+
+#KEYFILE_PATTERN=
 EOF
 
-chroot "$ROOTFS" apt-get update
-DEBIAN_FRONTEND=noninteractive chroot "$ROOTFS" apt-get upgrade -qy
+CHROOT live-update-initramfs -u
 
-echo "CRYPTSETUP=y" >> "$ROOTFS/etc/cryptsetup-initramfs/conf-hook"
-chroot "$ROOTFS" update-initramfs -u
-
-chroot "$ROOTFS" mv \
+CHROOT mv \
   /usr/share/i18n/locales/en_GB \
   /usr/share/i18n/locales/en_US \
   /usr/share/locale/locale.alias \
   /tmp/
 
-chroot "$ROOTFS" rm -rf \
+CHROOT rm -rf \
   /usr/share/i18n/locales/??_* \
   /usr/share/i18n/locales/???_* \
   /usr/share/i18n/locales/eo \
@@ -54,9 +118,10 @@ chroot "$ROOTFS" rm -rf \
   /var/lib/apt/lists/* \
   /var/log/*
 
-chroot "$ROOTFS" mv /tmp/en_GB /tmp/en_US /usr/share/i18n/locales/
-chroot "$ROOTFS" mv /tmp/locale.alias /usr/share/locale/
+CHROOT mv /tmp/en_GB /tmp/en_US /usr/share/i18n/locales/
+CHROOT mv /tmp/locale.alias /usr/share/locale/
 
-chroot "$ROOTFS" echo "root:root" | chpasswd
-rm -f "$ROOTFS/root/.bash_history"
-umount "$ROOTFS/proc"
+CHROOT sh -c "echo 'root:root' | chpasswd"
+rm -f "$ROOTFS/etc/hostname" "$ROOTFS/root/.bash_history"
+umount "$ROOTFS/proc" "$ROOTFS/sys"
+rm -f /tmp/.building-rootfs

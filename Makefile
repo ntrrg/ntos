@@ -4,11 +4,30 @@ include config.mk
 all: build
 
 .PHONY: build
-build: $(rootfs)
+build: $(rootfs) $(image)
 
 .PHONY: clean
 clean:
-	@rm -rf $(rootfs)
+	@rm -rf "$(rootfs)" "$(image)" /tmp/debian-iso /tmp/debian.iso
 
+.PHONY: deps
+deps:
+	apt-get install -y \
+		7z \
+		debootstrap \
+		squashfs-tools \
+		syslinux \
+		syslinux-efi \
+		wget
+
+.PHONY: $(rootfs)
 $(rootfs): scripts/rootfs.sh
-	ROOTFS="$@" scripts/rootfs.sh || rm -rf $@
+	ROOTFS="$@" $<
+
+.PHONY: $(image)
+$(image): scripts/image.sh
+	ROOTFS="$(rootfs)" \
+	HOSTNAME="$(image_hostname)" \
+	USERNAME="$(image_username)" \
+	TIMEZONE="$(image_timezone)" \
+	$<
