@@ -11,10 +11,17 @@ clean:
 	@rm -rf "$(rootfs)" "$(image)" /tmp/debian-iso /tmp/debian.iso
 
 .PHONY: deps
-deps:
+deps: deps-rootfs deps-image
+
+.PHONY: deps-rootfs
+deps-rootfs:
+	apt-get install -y \
+		debootstrap
+
+.PHONY: deps-image
+deps-image:
 	apt-get install -y \
 		7z \
-		debootstrap \
 		squashfs-tools \
 		syslinux \
 		syslinux-efi \
@@ -27,7 +34,7 @@ $(rootfs): scripts/rootfs.sh
 .PHONY: $(image)
 $(image): scripts/image.sh
 	ROOTFS="$(rootfs)" \
-	HOSTNAME="$(image_hostname)" \
-	USERNAME="$(image_username)" \
-	TIMEZONE="$(image_timezone)" \
+	HOSTNAME="$(hostname)" \
+	USERNAME="$(username)" \
+	TIMEZONE="$(timezone)" \
 	$<
