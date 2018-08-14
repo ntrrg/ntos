@@ -13,7 +13,16 @@ on_error() {
   trap - INT EXIT TERM
 
   if [ -f /tmp/.building-image ]; then
-    rm -rf /tmp/.building-image "$IMAGE" "$ROOTFS" /tmp/debian-iso
+    if [ -f /tmp/.boot-deleted ]; then
+      rm -rf /tmp/.boot-deleted "$ROOTFS"
+    fi
+
+    if [ -f /tmp/.debian-iso-modified ]; then
+      rm -rf /tmp/.debian-iso-modified /tmp/debian-iso
+    fi
+
+    rm -rf /tmp/.building-image "$IMAGE"
+
     return 1
   fi
 
@@ -73,6 +82,7 @@ mv "$(find "$ROOTFS/boot" -name "vmlinuz*")" "$IMAGE/EFI/boot/live/vmlinuz"
 rm -rf "$ROOTFS/boot"
 find "$ROOTFS" -name "initrd*" -delete
 find "$ROOTFS" -name "vmlinuz*" -delete
+echo "" > /tmp/.boot-deleted
 mksquashfs "$ROOTFS" "$IMAGE/live/filesystem.squashfs"
 
 wget -cO /tmp/debian.iso "$ISO_URL"
@@ -87,6 +97,7 @@ mv \
   /tmp/debian-iso/tools \
 "$IMAGE/"
 
+echo "" > /tmp/.debian-iso-modified
 mkdir -p "$IMAGE/EFI/boot/install"
 
 mv \
@@ -115,4 +126,4 @@ cp \
 
 PREFIX="/EFI/boot/" syslinux_config > "$IMAGE/syslinux/syslinux.cfg"
 
-rm -f /tmp/.building-image
+rm -f /tmp/.boot-deleted /tmp/.building-image /tmp/.debian-iso-modified

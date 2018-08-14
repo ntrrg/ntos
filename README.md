@@ -293,15 +293,11 @@ EOF
 
 ## Installation
 
-**Note:** the approach in this section is intended for minimal usage (even 4GB
+**Note:** the approach in this section is intended for minimal usage (even 1GB
 memories may be used), but users could use any approach that fits their needs).
 
 ```shell-session
 # apt install cryptsetup dosfstools fdisk syslinux
-```
-
-```shell-session
-# dd if=/dev/zero of=/dev/sdX bs=1048576 count=1
 ```
 
 ```shell-session
