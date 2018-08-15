@@ -85,7 +85,10 @@ find "$ROOTFS" -name "vmlinuz*" -delete
 echo "" > /tmp/.boot-deleted
 mksquashfs "$ROOTFS" "$IMAGE/live/filesystem.squashfs"
 
-wget -cO /tmp/debian.iso "$ISO_URL"
+if [ ! -f /tmp/debian.iso ]; then
+  wget -O /tmp/debian.iso "$ISO_URL"
+fi
+
 7z x /tmp/debian.iso -o/tmp/debian-iso
 chmod -R +rX /tmp/debian-iso
 

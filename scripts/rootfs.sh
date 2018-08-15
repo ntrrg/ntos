@@ -33,7 +33,9 @@ if [ ! -d "$ROOTFS" ]; then
     linux-image-amd64,
     locales,
     lvm2,
-    systemd-sysv
+    rfkill,
+    systemd-sysv,
+    wpasupplicant
   " buster "$ROOTFS" "$MIRROR"
 fi
 

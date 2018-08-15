@@ -18,7 +18,9 @@
     linux-image-amd64,
     locales,
     lvm2,
-    systemd-sysv
+    rfkill,
+    systemd-sysv,
+    wpasupplicant
   " \
 buster /tmp/rootfs http://deb.debian.org/debian
 ```
