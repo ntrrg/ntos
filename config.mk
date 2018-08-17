@@ -1,3 +1,5 @@
+shellcheck_release := 0.4.7
+
 rootfs := /tmp/rootfs
 mirror := http://deb.debian.org/debian
 packages := \

@@ -5,14 +5,35 @@ all: rootfs image
 
 .PHONY: clean
 clean:
+	@rm -f .make/vendor/shellcheck
 	@rm -rf "$(rootfs)" "$(image)" /tmp/debian-iso /tmp/debian.iso
 
-.PHONY: deps
-deps: deps-rootfs deps-image deps-install
+.PHONY: lint
+lint: .make/vendor/shellcheck
+	$< -s sh $$(find . -name "*.sh" -exec echo {} +)
 
 .PHONY: deps-rootfs
 deps-rootfs:
 	apt-get install -y debootstrap
+
+.PHONY: deps-image
+deps-image:
+	apt-get install -y p7zip squashfs-tools syslinux syslinux-efi wget
+
+.PHONY: deps-install
+deps-install:
+	apt-get install -y cryptsetup dosfstools fdisk syslinux
+
+.PHONY: deps
+deps: deps-rootfs deps-image deps-install
+
+.make/vendor/shellcheck:
+	@echo "Installing Shellcheck.."
+	@rm -rf $@
+	@RELEASE=$(shellcheck_release) DEST=$@ .make/bin/install-shellcheck.sh
+
+.PHONY: deps-dev
+deps-dev: .make/vendor/shellcheck
 
 $(rootfs): scripts/rootfs/create.sh
 	ROOTFS="$(rootfs)" MIRROR="$(mirror)" PACKAGES="$(packages)" $<
@@ -32,14 +53,6 @@ rootfs: $(rootfs) rootfs-setup rootfs-clean
 .PHONY: login
 login: scripts/rootfs/run.sh
 	@ROOTFS="$(rootfs)" $< bash
-
-.PHONY: deps-image
-deps-image:
-	apt-get install -y p7zip squashfs-tools syslinux syslinux-efi wget
-
-.PHONY: deps-install
-deps-install:
-	apt-get install -y cryptsetup dosfstools fdisk syslinux
 
 .PHONY: image
 image:
