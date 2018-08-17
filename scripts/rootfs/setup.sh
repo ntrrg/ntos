@@ -2,61 +2,27 @@
 
 set -e
 
-ROOTFS=${ROOTFS:-/tmp/rootfs}
-MIRROR=${MIRROR:-http://deb.debian.org/debian}
-
-on_error() {
-  trap - INT EXIT TERM
-
-  if [ -f /tmp/.building-rootfs ]; then
-    umount "$ROOTFS/proc" "$ROOTFS/sys" || true
-    rm -rf /tmp/.building-rootfs "$ROOTFS"
-    return 1
-  fi
-
-  return 0
-}
-
-trap on_error INT EXIT TERM
-
-CHROOT() {
-  DEBIAN_FRONTEND=noninteractive chroot "$ROOTFS" $@
-}
-
-echo "" > /tmp/.building-rootfs
-
 if [ ! -d "$ROOTFS" ]; then
-  debootstrap --variant=minbase --include="
-    btrfs-progs,
-    cryptsetup,
-    dosfstools,
-    linux-image-amd64,
-    locales,
-    lvm2,
-    rfkill,
-    systemd-sysv,
-    wpasupplicant
-  " buster "$ROOTFS" "$MIRROR"
+  echo "Can't find the rootfs: $ROOTFS" > /dev/stderr
+  exit 1
 fi
-
-mount -o bind /proc "$ROOTFS/proc"
-mount -o bind /sys "$ROOTFS/sys"
 
 cat <<EOF > "$ROOTFS/etc/apt/sources.list"
 deb $MIRROR buster main contrib non-free
 EOF
 
-CHROOT localedef \
+scripts/rootfs/run.sh localedef \
   -ci en_US \
   -f UTF-8 \
   -A /usr/share/locale/locale.alias \
 en_US.UTF-8
 
-CHROOT apt-get update
-CHROOT apt-get upgrade -qy
-CHROOT apt-get autoremove -y
+scripts/rootfs/run.sh apt-get update > /dev/null
+DEBIAN_FRONTEND="noninteractive" \
+  scripts/rootfs/run.sh apt-get upgrade -qy > /dev/null
 
-CHROOT apt-get install -qy live-boot live-config
+DEBIAN_FRONTEND="noninteractive" scripts/rootfs/run.sh \
+  apt-get install -qy live-boot live-config > /dev/null
 
 cat <<EOF > "$ROOTFS/etc/cryptsetup-initramfs/conf-hook"
 #
@@ -100,30 +66,7 @@ CRYPTSETUP=y
 #KEYFILE_PATTERN=
 EOF
 
-CHROOT live-update-initramfs -u
+scripts/rootfs/run.sh live-update-initramfs -u > /dev/null
 
-CHROOT mv \
-  /usr/share/i18n/locales/en_GB \
-  /usr/share/i18n/locales/en_US \
-  /usr/share/locale/locale.alias \
-  /tmp/
-
-CHROOT rm -rf \
-  /usr/share/i18n/locales/??_* \
-  /usr/share/i18n/locales/???_* \
-  /usr/share/i18n/locales/eo \
-  /usr/share/i18n/locales/iso14651_t1_pinyin \
-  /usr/share/locale/* \
-  /usr/share/man/?? \
-  /usr/share/man/??_* \
-  /var/cache/apt/* \
-  /var/lib/apt/lists/* \
-  /var/log/*
-
-CHROOT mv /tmp/en_GB /tmp/en_US /usr/share/i18n/locales/
-CHROOT mv /tmp/locale.alias /usr/share/locale/
-
-CHROOT sh -c "echo 'root:root' | chpasswd"
-rm -f "$ROOTFS/etc/hostname" "$ROOTFS/root/.bash_history"
-umount "$ROOTFS/proc" "$ROOTFS/sys"
-rm -f /tmp/.building-rootfs
+scripts/rootfs/run.sh sh -c "echo 'root:root' | chpasswd"
+rm -f "$ROOTFS/etc/hostname"
