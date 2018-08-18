@@ -2,13 +2,17 @@
 
 set -e
 
+# Customizable variables:
+#
+# * NO_DEBIAN_INSTALLER
+# * ISO_URL
+
 IMAGE=${IMAGE:-/tmp/image}
 ROOTFS=${ROOTFS:-/tmp/rootfs}
 ROOTFS_BOOT="/tmp/.ntos-rootfs-boot"
 HOSTNAME=${HOSTNAME:-NtFlash}
 USERNAME=${USERNAME:-ntrrg}
 TIMEZONE=${TIMEZONE:-America/Caracas}
-ISO_URL=${ISO_URL:-https://cdimage.debian.org/mirror/cdimage/weekly-builds/amd64/iso-cd/debian-testing-amd64-netinst.iso}
 
 on_error() {
   trap - INT EXIT TERM
@@ -99,8 +103,10 @@ mv "$ROOTFS_BOOT/boot" "$ROOTFS/"
 (cd "$ROOTFS_BOOT" && mv $(ls -A) "$ROOTFS/")
 rm -r "$ROOTFS_BOOT"
 
-if [ -n "$DEBIAN_INSTALLER" ]; then
+if [ -z "$NO_DEBIAN_INSTALLER" ]; then
   if [ ! -f /tmp/debian.iso ]; then
+    ISO_URL=${ISO_URL:-https://cdimage.debian.org/mirror/cdimage/weekly-builds/amd64/iso-cd/debian-testing-amd64-netinst.iso}
+
     wget -O /tmp/debian.iso "$ISO_URL"
   fi
 

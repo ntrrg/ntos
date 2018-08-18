@@ -2,6 +2,13 @@
 
 set -e
 
+# Customizable variables:
+#
+# * DEV
+# * IPN
+# * NO_PERSISTENCE
+# * PPN
+
 IMAGE=${IMAGE:-/tmp/image}
 
 on_error() {
@@ -38,7 +45,7 @@ fi
 
 dd if="$SYSLINUX_BIN" of="$DEV" bs=440 count=1
 
-IPN=0
+IPN="${IPN:-0}"
 
 while [ ! -b "$DEV$IPN" ]; do
   echo ""
@@ -59,26 +66,28 @@ mount "$IP" /mnt
 umount /mnt
 syslinux -id syslinux "$IP"
 
-PPN=0
+if [ -z "$NO_PERSISTENCE" ]; then
+  PPN="${PPN:-0}"
 
-while [ ! -b "$DEV$PPN" ]; do
-  echo ""
-  printf "Persistence partition number: "
-  read -r PPN
+  while [ ! -b "$DEV$PPN" ]; do
+    echo ""
+    printf "Persistence partition number: "
+    read -r PPN
 
-  if [ -z "$PPN" ]; then
-    PPN=0
-  fi
-done
+    if [ -z "$PPN" ]; then
+      PPN=0
+    fi
+  done
 
-PP="$DEV$PPN"
+  PP="$DEV$PPN"
 
-cryptsetup --verify-passphrase luksFormat "$PP"
-cryptsetup luksOpen "$PP" Persistence
-mkfs.ext4 -L persistence /dev/mapper/Persistence
-mount /dev/mapper/Persistence /mnt/
-echo "/ union" > /mnt/persistence.conf 
-umount /mnt
-cryptsetup luksClose /dev/mapper/Persistence
+  cryptsetup --verify-passphrase luksFormat "$PP"
+  cryptsetup luksOpen "$PP" Persistence
+  mkfs.ext4 -L persistence /dev/mapper/Persistence
+  mount /dev/mapper/Persistence /mnt/
+  echo "/ union" > /mnt/persistence.conf 
+  umount /mnt
+  cryptsetup luksClose /dev/mapper/Persistence
+fi
 
 rm -f /tmp/.ntos-install

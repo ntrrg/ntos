@@ -3,6 +3,10 @@ include config.mk
 .PHONY: all
 all: rootfs image
 
+.PHONY: help
+help:
+	@cat HELP.txt
+
 .PHONY: clean
 clean:
 	@rm -f .make/vendor/shellcheck
@@ -49,10 +53,10 @@ rootfs-clean: scripts/rootfs/clean.sh
 
 .PHONY: rootfs
 rootfs: $(rootfs) rootfs-setup rootfs-clean
-	#ROOTFS="$(rootfs)" scripts/rootfs.sh
 
 .PHONY: login
 login: scripts/rootfs/run.sh
+	@echo "You are now in the rootfs ($(rootfs)), when you finish type: exit"
 	@ROOTFS="$(rootfs)" $< bash
 
 .PHONY: image
