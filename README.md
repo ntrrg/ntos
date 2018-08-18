@@ -1,4 +1,4 @@
-## Features
+[![Travis build btatus](https://travis-ci.com/ntrrg/ntos.svg?branch=master)](https://travis-ci.com/ntrrg/ntos)
 
 ## Usage
 

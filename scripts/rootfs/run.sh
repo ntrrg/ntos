@@ -24,7 +24,7 @@ echo "" > /tmp/.ntos-rootfs-run
 mount -o bind /proc "$ROOTFS/proc"
 mount -o bind /sys "$ROOTFS/sys"
 
-chroot "$ROOTFS" $@
+chroot "$ROOTFS" "$@"
 
 umount "$ROOTFS/proc" "$ROOTFS/sys"
 

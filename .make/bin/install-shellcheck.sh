@@ -9,5 +9,5 @@ tar -xJf "$PACKAGE"
 
 cd "$OLDPWD" || exit 1
 
-cp "/tmp/shellcheck-v$RELEASE/shellcheck" "$DEST"
+cp -f "/tmp/shellcheck-v$RELEASE/shellcheck" "$DEST"
 chmod +x "$DEST"

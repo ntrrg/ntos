@@ -12,6 +12,9 @@ clean:
 lint: .make/vendor/shellcheck
 	$< -s sh $$(find . -name "*.sh" -exec echo {} +)
 
+.PHONY: ci
+ci: lint all
+
 .PHONY: deps-rootfs
 deps-rootfs:
 	apt-get install -y debootstrap
@@ -28,8 +31,6 @@ deps-install:
 deps: deps-rootfs deps-image deps-install
 
 .make/vendor/shellcheck:
-	@echo "Installing Shellcheck.."
-	@rm -rf $@
 	@RELEASE=$(shellcheck_release) DEST=$@ .make/bin/install-shellcheck.sh
 
 .PHONY: deps-dev
@@ -66,7 +67,3 @@ image:
 .PHONY: install
 install:
 	IMAGE="$(image)" scripts/install.sh
-
-.PHONY: test
-test:
-	@echo $(default_packages)

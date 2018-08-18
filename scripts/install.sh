@@ -32,7 +32,7 @@ echo "" > /tmp/.install-image
 while [ ! -b "$DEV" ]; do
   lsblk
   printf "Pick a device (i.e. /dev/sdX): "
-  read DEV
+  read -r DEV
 done
 
 fdisk "$DEV"
@@ -52,9 +52,9 @@ IPN=0
 while [ ! -b "$DEV$IPN" ]; do
   echo ""
   printf "Image partition number: "
-  read IPN
+  read -r IPN
 
-  if [ -z $IPN ]; then
+  if [ -z "$IPN" ]; then
     IPN=0
   fi
 done
@@ -64,6 +64,7 @@ IP="$DEV$IPN"
 mkfs.fat -F 32 -n NTOS "$IP"
 mount "$IP" /mnt
 echo "" > /tmp/.image-partition-mounted
+# shellcheck disable=SC2046
 (cd "$IMAGE" && cp -rf $(ls -A) /mnt/)
 umount /mnt
 rm -f /tmp/.image-partition-mounted
@@ -74,9 +75,9 @@ PPN=0
 while [ ! -b "$DEV$PPN" ]; do
   echo ""
   printf "Persistence partition number: "
-  read PPN
+  read -r PPN
 
-  if [ -z $PPN ]; then
+  if [ -z "$PPN" ]; then
     PPN=0
   fi
 done

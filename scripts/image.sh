@@ -79,6 +79,7 @@ echo "" > /tmp/.building-image
 mkdir -p "$IMAGE/live" "$IMAGE/EFI/boot/live"
 mv "$(find "$ROOTFS/boot" -name "initrd*")" "$IMAGE/EFI/boot/live/initrd.img"
 mv "$(find "$ROOTFS/boot" -name "vmlinuz*")" "$IMAGE/EFI/boot/live/vmlinuz"
+# shellcheck disable=SC2115
 rm -rf "$ROOTFS/boot"
 find "$ROOTFS" -name "initrd*" -delete
 find "$ROOTFS" -name "vmlinuz*" -delete

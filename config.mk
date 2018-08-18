@@ -1,5 +1,3 @@
-shellcheck_release := 0.4.7
-
 rootfs := /tmp/rootfs
 mirror := http://deb.debian.org/debian
 packages := \
@@ -17,3 +15,7 @@ image := /tmp/image
 hostname := NtFlash
 username := ntrrg
 timezone := America/Caracas
+
+# Development
+
+shellcheck_release := 0.4.7
