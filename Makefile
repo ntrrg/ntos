@@ -6,7 +6,7 @@ all: rootfs image
 .PHONY: clean
 clean:
 	@rm -f .make/vendor/shellcheck
-	@rm -rf "$(rootfs)" "$(image)" /tmp/debian-iso /tmp/debian.iso
+	@rm -rf "$(rootfs)" "$(image)" /tmp/debian.iso
 
 .PHONY: lint
 lint: .make/vendor/shellcheck

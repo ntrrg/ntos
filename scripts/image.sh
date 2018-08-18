@@ -4,24 +4,26 @@ set -e
 
 IMAGE=${IMAGE:-/tmp/image}
 ROOTFS=${ROOTFS:-/tmp/rootfs}
-ISO_URL=${ISO_URL:-https://cdimage.debian.org/mirror/cdimage/weekly-builds/amd64/iso-cd/debian-testing-amd64-netinst.iso}
+ROOTFS_BOOT="/tmp/.ntos-rootfs-boot"
 HOSTNAME=${HOSTNAME:-NtFlash}
 USERNAME=${USERNAME:-ntrrg}
 TIMEZONE=${TIMEZONE:-America/Caracas}
+ISO_URL=${ISO_URL:-https://cdimage.debian.org/mirror/cdimage/weekly-builds/amd64/iso-cd/debian-testing-amd64-netinst.iso}
 
 on_error() {
   trap - INT EXIT TERM
 
-  if [ -f /tmp/.building-image ]; then
-    if [ -f /tmp/.boot-deleted ]; then
-      rm -rf /tmp/.boot-deleted "$ROOTFS"
+  if [ -f /tmp/.ntos-image-build ]; then
+    if [ -d "$ROOTFS_BOOT" ]; then
+      if [ -d "$ROOTFS_BOOT/boot" ]; then
+        mv "$ROOTFS_BOOT/boot" "$ROOTFS/"
+      fi
+
+      # shellcheck disable=SC2046
+      (cd "$ROOTFS_BOOT" && mv $(ls -A) "$ROOTFS/")
     fi
 
-    if [ -f /tmp/.debian-iso-modified ]; then
-      rm -rf /tmp/.debian-iso-modified /tmp/debian-iso
-    fi
-
-    rm -rf /tmp/.building-image "$IMAGE"
+    rm -rf /tmp/.ntos-image-build /tmp/debian-iso "$IMAGE" "$ROOTFS_BOOT"
 
     return 1
   fi
@@ -74,40 +76,54 @@ menu end
 EOF
 }
 
-echo "" > /tmp/.building-image
+echo "" > /tmp/.ntos-image-build
 
 mkdir -p "$IMAGE/live" "$IMAGE/EFI/boot/live"
-mv "$(find "$ROOTFS/boot" -name "initrd*")" "$IMAGE/EFI/boot/live/initrd.img"
-mv "$(find "$ROOTFS/boot" -name "vmlinuz*")" "$IMAGE/EFI/boot/live/vmlinuz"
+cp "$(find "$ROOTFS/boot" -name "initrd*")" "$IMAGE/EFI/boot/live/initrd.img"
+cp "$(find "$ROOTFS/boot" -name "vmlinuz*")" "$IMAGE/EFI/boot/live/vmlinuz"
+
+mkdir -p "$ROOTFS_BOOT"
 # shellcheck disable=SC2115
-rm -rf "$ROOTFS/boot"
-find "$ROOTFS" -name "initrd*" -delete
-find "$ROOTFS" -name "vmlinuz*" -delete
-echo "" > /tmp/.boot-deleted
+mv "$ROOTFS/boot" "$ROOTFS_BOOT/"
+
+mv \
+  "$ROOTFS/initrd.img" \
+  "$ROOTFS/initrd.img.old" \
+  "$ROOTFS/vmlinuz" \
+  "$ROOTFS/vmlinuz.old" \
+"$ROOTFS_BOOT/"
+
 mksquashfs "$ROOTFS" "$IMAGE/live/filesystem.squashfs"
+mv "$ROOTFS_BOOT/boot" "$ROOTFS/"
+# shellcheck disable=SC2046
+(cd "$ROOTFS_BOOT" && mv $(ls -A) "$ROOTFS/")
+rm -r "$ROOTFS_BOOT"
 
-if [ ! -f /tmp/debian.iso ]; then
-  wget -O /tmp/debian.iso "$ISO_URL"
+if [ -n "$DEBIAN_INSTALLER" ]; then
+  if [ ! -f /tmp/debian.iso ]; then
+    wget -O /tmp/debian.iso "$ISO_URL"
+  fi
+
+  7z x /tmp/debian.iso -o/tmp/debian-iso
+  chmod -R +rX /tmp/debian-iso
+
+  mv \
+    /tmp/debian-iso/.disk \
+    "/tmp/debian-iso/[BOOT]" \
+    /tmp/debian-iso/dists \
+    /tmp/debian-iso/pool \
+    /tmp/debian-iso/tools \
+  "$IMAGE/"
+
+  mkdir -p "$IMAGE/EFI/boot/install"
+
+  mv \
+    /tmp/debian-iso/install.amd/initrd.gz \
+    /tmp/debian-iso/install.amd/vmlinuz \
+  "$IMAGE/EFI/boot/install/"
+
+  rm -rf /tmp/debian-iso
 fi
-
-7z x /tmp/debian.iso -o/tmp/debian-iso
-chmod -R +rX /tmp/debian-iso
-
-mv \
-  /tmp/debian-iso/.disk \
-  "/tmp/debian-iso/[BOOT]" \
-  /tmp/debian-iso/dists \
-  /tmp/debian-iso/pool \
-  /tmp/debian-iso/tools \
-"$IMAGE/"
-
-echo "" > /tmp/.debian-iso-modified
-mkdir -p "$IMAGE/EFI/boot/install"
-
-mv \
-  /tmp/debian-iso/install.amd/initrd.gz \
-  /tmp/debian-iso/install.amd/vmlinuz \
-"$IMAGE/EFI/boot/install/"
 
 cp \
   /usr/lib/SYSLINUX.EFI/efi64/syslinux.efi \
@@ -130,4 +146,4 @@ cp \
 
 PREFIX="/EFI/boot/" syslinux_config > "$IMAGE/syslinux/syslinux.cfg"
 
-rm -f /tmp/.boot-deleted /tmp/.building-image /tmp/.debian-iso-modified
+rm -rf /tmp/.ntos-image-build
