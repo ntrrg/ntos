@@ -13,7 +13,7 @@ lint: .make/vendor/shellcheck
 	$< -s sh $$(find . -name "*.sh" -exec echo {} +)
 
 .PHONY: ci
-ci: lint all
+ci: lint
 
 .PHONY: deps-rootfs
 deps-rootfs:
