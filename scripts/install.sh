@@ -7,18 +7,9 @@ IMAGE=${IMAGE:-/tmp/image}
 on_error() {
   trap - INT EXIT TERM
 
-  if [ -f /tmp/.installing-image ]; then
-    if [ -f /tmp/.image-partition-mounted ]; then
-      rm -f /tmp/.image-partition-mounted
-      umount /mnt/
-    fi
-
-    if [ -f /tmp/.persistence-partition-mounted ]; then
-      rm -f /tmp/.persistence-partition-mounted
-      umount /mnt/
-    fi
-
-    rm -f /tmp/.installing-image
+  if [ -f /tmp/.ntos-install ]; then
+    umount /mnt/ || true
+    rm -f /tmp/.ntos-install
     return 1
   fi
 
@@ -27,7 +18,7 @@ on_error() {
 
 trap on_error INT EXIT TERM
 
-echo "" > /tmp/.install-image
+echo "" > /tmp/.ntos-install
 
 while [ ! -b "$DEV" ]; do
   lsblk
@@ -63,11 +54,9 @@ IP="$DEV$IPN"
 
 mkfs.fat -F 32 -n NTOS "$IP"
 mount "$IP" /mnt
-echo "" > /tmp/.image-partition-mounted
 # shellcheck disable=SC2046
 (cd "$IMAGE" && cp -rf $(ls -A) /mnt/)
 umount /mnt
-rm -f /tmp/.image-partition-mounted
 syslinux -id syslinux "$IP"
 
 PPN=0
@@ -88,10 +77,8 @@ cryptsetup --verify-passphrase luksFormat "$PP"
 cryptsetup luksOpen "$PP" Persistence
 mkfs.ext4 -L persistence /dev/mapper/Persistence
 mount /dev/mapper/Persistence /mnt/
-echo "" > /tmp/.persistence-partition-mounted
 echo "/ union" > /mnt/persistence.conf 
 umount /mnt
-rm -f /tmp/.persistence-partition-mounted
 cryptsetup luksClose /dev/mapper/Persistence
 
-rm -f /tmp/.installing-image
+rm -f /tmp/.ntos-install
