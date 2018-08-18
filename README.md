@@ -1,6 +1,16 @@
 [![Travis build btatus](https://travis-ci.com/ntrrg/ntos.svg?branch=master)](https://travis-ci.com/ntrrg/ntos)
 
+**NtOS** is a Debian live systems creator with encrypted persistence, it is
+attached to the Debian testing release cycle, so there are no version numbers,
+no release names or backward compatibility promises.
+
 ## Usage
+
+```shell-session
+$ make help
+```
+
+See <https://nt.web.ve/en/projects/ntos>.
 
 ## Acknowledgment
 
