@@ -1,4 +1,6 @@
 #!/bin/sh
+# Copyright (c) 2018 Miguel Angel Rivera Notararigo
+# Released under the MIT License
 
 on_error() {
   trap - INT EXIT TERM

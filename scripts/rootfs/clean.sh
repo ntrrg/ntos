@@ -1,4 +1,6 @@
 #!/bin/sh
+# Copyright (c) 2018 Miguel Angel Rivera Notararigo
+# Released under the MIT License
 
 if [ ! -d "$ROOTFS" ]; then
   echo "Can't find the rootfs: $ROOTFS" > /dev/stderr
