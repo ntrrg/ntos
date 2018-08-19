@@ -4,6 +4,7 @@ packages := \
 	btrfs-progs, \
 	cryptsetup, \
 	dosfstools, \
+	isc-dhcp-client, \
 	linux-image-amd64, \
 	locales, \
 	lvm2, \
