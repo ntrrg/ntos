@@ -19,4 +19,4 @@ Advanced usage:
 
 NtOS https://nt.web.ve/en/projects/ntos
 Copyright (c) 2018 Miguel Angel Rivera Notararigo
-Licensed under The MIT License
+Released under the MIT License
