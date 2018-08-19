@@ -52,6 +52,10 @@ label start
   kernel ${PREFIX}live/vmlinuz
   initrd ${PREFIX}live/initrd.img
   append boot=live components noroot noautologin hostname=$HOSTNAME username=$USERNAME timezone=$TIMEZONE quiet persistence persistence-encryption=luks
+EOF
+
+  if [ -z "$NO_DEBIAN_INSTALLER" ]; then
+    cat <<EOF
 
 menu begin install
   menu label ^Install Debian Buster
@@ -80,6 +84,7 @@ menu begin install
     menu exit
 menu end
 EOF
+  fi
 }
 
 echo "" > /tmp/.ntos-image-build
