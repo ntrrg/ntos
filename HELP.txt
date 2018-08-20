@@ -1,9 +1,8 @@
-NtOS is a Debian live systems builder with encrypted persistence by default.
+NtOS is a Debian live system with encrypted persistence by default.
 
 Basic usage:
 
   $ EDITOR config.mk
-  # make deps
   # make
   # make install
 

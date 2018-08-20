@@ -16,11 +16,6 @@ on_error() {
 
 trap on_error INT EXIT TERM
 
-if [ ! -d "$ROOTFS" ]; then
-  echo "Can't find the rootfs: $ROOTFS" > /dev/stderr
-  exit 1
-fi
-
 echo "" > /tmp/.ntos-rootfs-run
 
 mount -o bind /dev "$ROOTFS/dev"

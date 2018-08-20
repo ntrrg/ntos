@@ -4,11 +4,6 @@
 
 set -e
 
-if [ ! -d "$ROOTFS" ]; then
-  echo "Can't find the rootfs: $ROOTFS" > /dev/stderr
-  exit 1
-fi
-
 cat <<EOF > "$ROOTFS/etc/apt/sources.list"
 deb $MIRROR buster main contrib non-free
 EOF

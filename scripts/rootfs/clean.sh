@@ -2,11 +2,6 @@
 # Copyright (c) 2018 Miguel Angel Rivera Notararigo
 # Released under the MIT License
 
-if [ ! -d "$ROOTFS" ]; then
-  echo "Can't find the rootfs: $ROOTFS" > /dev/stderr
-  exit 1
-fi
-
 scripts/rootfs/run.sh apt-get autoremove -y > /dev/null
 
 scripts/rootfs/run.sh mv \

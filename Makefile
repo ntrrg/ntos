@@ -1,7 +1,7 @@
 include config.mk
 
 .PHONY: all
-all: rootfs image
+all: deps rootfs image
 
 .PHONY: help
 help:
@@ -44,31 +44,33 @@ $(rootfs): scripts/rootfs/create.sh
 	ROOTFS="$(rootfs)" MIRROR="$(mirror)" PACKAGES="$(packages)" $<
 
 .PHONY: rootfs-setup
-rootfs-setup: scripts/rootfs/setup.sh
-	ROOTFS="$(rootfs)" MIRROR="$(mirror)" $<
+rootfs-setup: $(rootfs)
+	ROOTFS="$(rootfs)" MIRROR="$(mirror)" scripts/rootfs/setup.sh
 
 .PHONY: rootfs-clean
-rootfs-clean: scripts/rootfs/clean.sh
-	ROOTFS="$(rootfs)" $<
+rootfs-clean: $(rootfs)
+	ROOTFS="$(rootfs)" scripts/rootfs/clean.sh
 
 .PHONY: rootfs
 rootfs: $(rootfs) rootfs-setup rootfs-clean
 	@cp -f scripts/post-install.sh "$(rootfs)/usr/bin/"
 
 .PHONY: login
-login: scripts/rootfs/run.sh
+login: $(rootfs)
 	@echo "You are now in the rootfs ($(rootfs)), when you finish type: exit"
-	@ROOTFS="$(rootfs)" $< bash
+	@ROOTFS="$(rootfs)" scripts/rootfs/run.sh bash
+
+$(image): scripts/image/create.sh $(rootfs)
+	ROOTFS="$(rootfs)" IMAGE="$(image)" $<
 
 .PHONY: image
-image:
+image: $(image)
 	IMAGE="$(image)" \
-	ROOTFS="$(rootfs)" \
 	HOSTNAME="$(hostname)" \
 	USERNAME="$(username)" \
 	TIMEZONE="$(timezone)" \
-	scripts/image.sh
+	scripts/image/menu.sh
 
 .PHONY: install
-install:
+install: $(image)
 	IMAGE="$(image)" scripts/install.sh
