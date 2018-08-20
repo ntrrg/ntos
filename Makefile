@@ -53,6 +53,7 @@ rootfs-clean: scripts/rootfs/clean.sh
 
 .PHONY: rootfs
 rootfs: $(rootfs) rootfs-setup rootfs-clean
+	@cp -f scripts/post-install.sh "$(rootfs)/usr/bin/"
 
 .PHONY: login
 login: scripts/rootfs/run.sh
