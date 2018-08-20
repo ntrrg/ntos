@@ -11,7 +11,6 @@ set -e
 
 IMAGE=${IMAGE:-/tmp/image}
 ROOTFS=${ROOTFS:-/tmp/rootfs}
-ROOTFS_BOOT="/tmp/.ntos-rootfs-boot"
 HOSTNAME=${HOSTNAME:-NtFlash}
 USERNAME=${USERNAME:-ntrrg}
 TIMEZONE=${TIMEZONE:-America/Caracas}
@@ -20,16 +19,7 @@ on_error() {
   trap - INT EXIT TERM
 
   if [ -f /tmp/.ntos-image-build ]; then
-    if [ -d "$ROOTFS_BOOT" ]; then
-      if [ -d "$ROOTFS_BOOT/boot" ]; then
-        mv "$ROOTFS_BOOT/boot" "$ROOTFS/"
-      fi
-
-      # shellcheck disable=SC2046
-      (cd "$ROOTFS_BOOT" && mv $(ls -A) "$ROOTFS/")
-    fi
-
-    rm -rf /tmp/.ntos-image-build /tmp/debian-iso "$IMAGE" "$ROOTFS_BOOT"
+    rm -rf /tmp/.ntos-image-build /tmp/debian-iso "$IMAGE"
 
     return 1
   fi
@@ -92,23 +82,7 @@ echo "" > /tmp/.ntos-image-build
 mkdir -p "$IMAGE/live" "$IMAGE/EFI/boot/live"
 cp "$(find "$ROOTFS/boot" -name "initrd*")" "$IMAGE/EFI/boot/live/initrd.img"
 cp "$(find "$ROOTFS/boot" -name "vmlinuz*")" "$IMAGE/EFI/boot/live/vmlinuz"
-
-mkdir -p "$ROOTFS_BOOT"
-# shellcheck disable=SC2115
-mv "$ROOTFS/boot" "$ROOTFS_BOOT/"
-
-mv \
-  "$ROOTFS/initrd.img" \
-  "$ROOTFS/initrd.img.old" \
-  "$ROOTFS/vmlinuz" \
-  "$ROOTFS/vmlinuz.old" \
-"$ROOTFS_BOOT/"
-
 mksquashfs "$ROOTFS" "$IMAGE/live/filesystem.squashfs"
-mv "$ROOTFS_BOOT/boot" "$ROOTFS/"
-# shellcheck disable=SC2046
-(cd "$ROOTFS_BOOT" && mv $(ls -A) "$ROOTFS/")
-rm -r "$ROOTFS_BOOT"
 
 if [ -z "$NO_DEBIAN_INSTALLER" ]; then
   if [ ! -f /tmp/debian.iso ]; then
