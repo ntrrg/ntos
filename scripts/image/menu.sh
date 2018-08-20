@@ -2,6 +2,8 @@
 # Copyright (c) 2018 Miguel Angel Rivera Notararigo
 # Released under the MIT License
 
+# shellcheck disable=SC2039
+
 # Customizable variables:
 #
 # * NO_DEBIAN_INSTALLER
