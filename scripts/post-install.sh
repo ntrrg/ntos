@@ -98,6 +98,7 @@ case "$MODE" in
       simple-scan \
       system-config-printer \
       vlc \
+      wicd \
       xfce4 \
       xfce4-goodies
 
