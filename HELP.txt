@@ -1,4 +1,4 @@
-NtOS is a Debian live system with encrypted persistence.
+NtOS is a Debian live systems builder with encrypted persistence by default.
 
 Basic usage:
 
