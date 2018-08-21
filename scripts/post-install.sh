@@ -21,6 +21,7 @@ apt-get install -y \
   htop \
   iftop \
   isc-dhcp-client \
+  lbzip2 \
   lvm2 \
   netselect \
   ntfs-3g \
@@ -63,7 +64,9 @@ dpkg -i /tmp/ntos-packages-common/docker-ce_18.03.1~ce-0~debian_amd64.deb ||
 
 # Docker Compose
 
-cp -f /tmp/ntos-packages-common/docker-compose-1.22.0-Linux-x86_64 /usr/bin/
+cp -f /tmp/ntos-packages-common/docker-compose-1.22.0-Linux-x86_64 \
+  /usr/bin/docker-compose
+
 chmod +x /usr/bin/docker-compose
 
 cp -f /tmp/ntos-packages-common/docker-compose-1.22.0-completion-bash \
@@ -74,7 +77,7 @@ cp -f /tmp/ntos-packages-common/docker-compose-1.22.0-completion-zsh \
 
 # no-ip
 
-tar -xf /tmp/ntos-packages-gui/noip-duc-2.1.9-linux.tar.gz -C /tmp/
+tar -xf /tmp/ntos-packages-common/noip-duc-2.1.9-linux.tar.gz -C /tmp/
 cp /tmp/noip-2.1.9-1/binaries/noip2-x86_64 /usr/local/bin/noip2
 rm -rf /tmp/noip-2.1.9-1
 
@@ -132,7 +135,7 @@ case "$MODE" in
       libncurses-dev \
       make
 
-    tar -xf /tmp/ntos-packages-gui/vim-8.1.tar.bz2 -C /tmp/
+    tar -xf /tmp/ntos-packages-common/vim-8.1.tar.bz2 -C /tmp/
     (cd /tmp/vim81 && ./configure && make && make install)
     rm -rf /tmp/vim81
     ;;
@@ -195,7 +198,7 @@ EOF
       libxtst-dev \
       make
 
-    tar -xf /tmp/ntos-packages-gui/vim-8.1.tar.bz2 -C /tmp/
+    tar -xf /tmp/ntos-packages-common/vim-8.1.tar.bz2 -C /tmp/
     (cd /tmp/vim81 && ./configure --with-features=huge && make && make install)
     rm -rf /tmp/vim81
 
@@ -230,8 +233,8 @@ EOF
 
     # Paper Icon Theme
 
-    dpkg -i /tmp/ntos-packages-gui/paper-icon-theme_1.5.721-201808151353~daily~ubuntu18.04.1_all.deb
-      || apt-get install -fy
+    dpkg -i /tmp/ntos-packages-gui/paper-icon-theme_1.5.721-201808151353~daily~ubuntu18.04.1_all.deb ||
+      apt-get install -fy
 
     rm -rf /tmp/ntos-packages-gui
     ;;

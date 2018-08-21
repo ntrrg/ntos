@@ -74,7 +74,7 @@ image: $(image)
 	scripts/image/menu.sh
 
 .PHONY: install
-install:
+install: $(image)
 	IMAGE="$(image)" scripts/install.sh
 
 .PHONY: dist
