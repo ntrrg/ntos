@@ -79,4 +79,4 @@ install:
 
 .PHONY: dist
 dist: $(rootfs)
-	cd $(rootfs) && tar -czf "$$OLDPWD/dist/ntos-rootfs-w34-x64.tar.gz" .
+	cd $(rootfs) && tar -czf "$$OLDPWD/dist/ntos-rootfs-w$$(date +%V)-x64.tar.gz" .
