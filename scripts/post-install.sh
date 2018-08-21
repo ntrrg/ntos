@@ -5,8 +5,8 @@
 set -e
 
 MODE="${MODE:-TEXT}"
-WEEK="w$(date +%V)"
-MIRROR="${MIRROR:-https://github.com/ntrrg/ntos/releases/download/$WEEK}"
+WEEK="${WEEK:-34}"
+MIRROR="${MIRROR:-https://github.com/ntrrg/ntos/releases/download/w$WEEK}"
 
 apt-get update
 apt-get upgrade -y
@@ -42,7 +42,7 @@ if lspci | grep -q "Network controller"; then
 fi
 
 wget -cO /tmp/ntos-packages-common.tar.gz \
-  "$MIRROR/ntos-packages-common-$WEEK-x64.tar.gz"
+  "$MIRROR/ntos-packages-common-w$WEEK-x64.tar.gz"
 
 tar -xf /tmp/ntos-packages-common.tar.gz -C /tmp/
 
@@ -139,7 +139,7 @@ case "$MODE" in
 
   "GUI" )
     wget -cO /tmp/ntos-packages-gui.tar.gz \
-      "$MIRROR/ntos-packages-gui-$WEEK-x64.tar.gz"
+      "$MIRROR/ntos-packages-gui-w$WEEK-x64.tar.gz"
 
     tar -xf /tmp/ntos-packages-gui.tar.gz -C /tmp/
 
