@@ -74,7 +74,7 @@ deps-install:
 	@apt-get install -y cryptsetup dosfstools fdisk syslinux > /dev/null
 
 .PHONY: install
-install: image
+install:
 	IMAGE="$(image)" scripts/install.sh
 
 # Development
