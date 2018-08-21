@@ -4,7 +4,7 @@ include config.mk
 all: deps image
 
 .PHONY: ci
-ci: lint lint-md
+ci: lint
 
 .PHONY: clean
 clean:
