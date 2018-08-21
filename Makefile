@@ -14,22 +14,24 @@ clean:
 
 .PHONY: lint
 lint: .make/vendor/shellcheck
-	$< -s sh $$(find . -name "*.sh" -exec echo {} +)
+	$< -s sh \
+		$$(find .make/bin -name "*.sh" -exec echo {} +) \
+		$$(find scripts/ -name "*.sh" -exec echo {} +)
 
 .PHONY: ci
 ci: lint
 
 .PHONY: deps-rootfs
 deps-rootfs:
-	apt-get install -y debootstrap
+	@apt-get install -y debootstrap > /dev/null
 
 .PHONY: deps-image
 deps-image:
-	apt-get install -y p7zip squashfs-tools syslinux syslinux-efi wget
+	@apt-get install -y p7zip squashfs-tools syslinux syslinux-efi wget > /dev/null
 
 .PHONY: deps-install
 deps-install:
-	apt-get install -y cryptsetup dosfstools fdisk syslinux
+	@apt-get install -y cryptsetup dosfstools fdisk syslinux > /dev/null
 
 .PHONY: deps
 deps: deps-rootfs deps-image deps-install
@@ -72,5 +74,9 @@ image: $(image)
 	scripts/image/menu.sh
 
 .PHONY: install
-install: $(image)
+install:
 	IMAGE="$(image)" scripts/install.sh
+
+.PHONY: dist
+dist: $(rootfs)
+	cd $(rootfs) && tar -czf "$$OLDPWD/dist/ntos-rootfs-w34-x64.tar.gz" .

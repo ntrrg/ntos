@@ -11,7 +11,10 @@ set -e
 # * NO_PERSISTENCE
 # * PPN
 
-IMAGE=${IMAGE:-/tmp/image}
+if [ ! -d "$IMAGE" ]; then
+  echo "No image to install" > /dev/stderr
+  exit 1
+fi
 
 on_error() {
   trap - INT EXIT TERM

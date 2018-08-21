@@ -6,3 +6,6 @@ nogit-*
 .DS_Store
 .screenrc
 .make/vendor/shellcheck
+dist/ntos-packages-common
+dist/ntos-packages-gui
+dist/*.tar.gz
