@@ -1,20 +1,76 @@
 [![Travis build btatus](https://travis-ci.com/ntrrg/ntos.svg?branch=master)](https://travis-ci.com/ntrrg/ntos)
 
 **NtOS** is a Debian live system with encrypted persistence by default. It is
-attached to the Debian testing release cycle, so there are no version numbers
+attached at the Debian testing release cycle, so there are no version numbers
 nor release names, just weekly builds.
 
-## Usage
-
-```shell-session
-# apt install make
-```
-
-```shell-session
-$ make help
-```
-
 See <https://nt.web.ve/en/projects/ntos>.
+
+## Building
+
+### Basic
+
+1\. Setup the parameters
+
+```shell-session
+$ EDITOR config.mk
+```
+
+2\. Create the image
+
+```shell-session
+# make
+```
+
+3\. Install the image in a USB device
+
+```shell-session
+# make install
+```
+
+### Advanced
+
+1\. Setup the parameters
+
+```shell-session
+$ EDITOR config.mk
+```
+
+2\. Install the building dependencies
+
+```shell-session
+# make deps
+```
+
+3\. Create the rootfs
+
+```shell-session
+# make rootfs
+```
+
+4\. Login into the rootfs for custom configurations
+
+```shell-session
+# make login
+```
+
+5\. Remove unnecessary data from the rootfs
+
+```shell-session
+# make rootfs-clean
+```
+
+6\. Build the image
+
+```shell-session
+# [NO_DEBIAN_INSTALLER=true] [ISO_URL=CUSTOM_ISO_URL] make image
+```
+
+7\. Install the image in a USB device
+
+```shell-session
+# [NO_PERSISTENCE=true] make install
+```
 
 ## Acknowledgment
 
