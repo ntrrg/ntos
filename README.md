@@ -6,9 +6,11 @@ nor release names, just weekly builds.
 
 See <https://nt.web.ve/en/projects/ntos>.
 
-## Building
+## Build
 
-### Basic
+**Requirements:**
+
+* GNU Make
 
 1\. Setup the parameters
 
@@ -23,50 +25,6 @@ $ EDITOR config.mk
 ```
 
 3\. Install the image in a USB device
-
-```shell-session
-# make install
-```
-
-### Advanced
-
-1\. Setup the parameters
-
-```shell-session
-$ EDITOR config.mk
-```
-
-2\. Install the building dependencies
-
-```shell-session
-# make deps
-```
-
-3\. Create the rootfs
-
-```shell-session
-# make rootfs
-```
-
-4\. Login into the rootfs for custom configurations
-
-```shell-session
-# make login
-```
-
-5\. Remove unnecessary data from the rootfs
-
-```shell-session
-# make rootfs-clean
-```
-
-6\. Build the image
-
-```shell-session
-# [NO_DEBIAN_INSTALLER=true] [ISO_URL=CUSTOM_ISO_URL] make image
-```
-
-7\. Install the image in a USB device
 
 ```shell-session
 # [NO_PERSISTENCE=true] make install

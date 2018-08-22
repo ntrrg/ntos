@@ -18,7 +18,9 @@ deps: deps-rootfs deps-image deps-install
 .PHONY: dist
 dist: $(rootfs) $(image)
 	cd $(rootfs) && tar -czf "$$OLDPWD/dist/ntos-rootfs-w34-x64.tar.gz" .
+	@rm -rf "$(image)/syslinux/syslinux.cfg" "$(image)/EFI/boot/syslinux.cfg"
 	cd $(image) && tar -czf "$$OLDPWD/dist/ntos-image-w34-x64.tar.gz" .
+	@$(MAKE) -s image
 
 .PHONY: help
 help:
@@ -62,10 +64,9 @@ image: $(image)
 	TIMEZONE="$(timezone)" \
 	scripts/image/menu.sh
 
-$(image): $(rootfs) scripts/image/create.sh
+$(image): scripts/image/create.sh
 	@rm -rf "$(image)"
-	@$(MAKE) -s rootfs-clean
-	ROOTFS="$(rootfs)" IMAGE="$(image)" $(word 2,$^)
+	ROOTFS="$(rootfs)" IMAGE="$(image)" $<
 
 # Install
 
@@ -74,7 +75,7 @@ deps-install:
 	@apt-get install -y cryptsetup dosfstools fdisk syslinux > /dev/null
 
 .PHONY: install
-install:
+install: image
 	IMAGE="$(image)" scripts/install.sh
 
 # Development

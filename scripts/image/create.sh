@@ -14,6 +14,11 @@ if [ -d "$IMAGE" ]; then
   exit
 fi
 
+if [ ! -d "$ROOTFS" ]; then
+  echo "No rootfs to use" > /dev/stderr
+  exit 1
+fi
+
 on_error() {
   trap - INT EXIT TERM
 
