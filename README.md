@@ -6,6 +6,39 @@ nor release names, just weekly builds.
 
 See <https://nt.web.ve/en/projects/ntos>.
 
+## Usage
+
+**Requirements:**
+
+* GNU Make
+
+1\. Get the image
+
+```shell-session
+$ wget -O /tmp/ntos-image-w34-x64.tar.gz \
+  https://github.com/ntrrg/ntos/releases/download/w34/ntos-image-w34-x64.tar.gz
+```
+
+```shell-session
+$ mkdir /tmp/image
+```
+
+```shell-session
+# tar -xf /tmp/ntos-image-w34-x64.tar.gz -C /tmp/image
+```
+
+2\. Setup the parameters
+
+```shell-session
+$ EDITOR config.mk
+```
+
+3\. Install the image in a USB device
+
+```shell-session
+# [NO_PERSISTENCE=true] make install
+```
+
 ## Build
 
 **Requirements:**
