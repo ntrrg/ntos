@@ -1,20 +1,29 @@
 NtOS is a Debian live system with encrypted persistence by default.
 
-Basic usage:
+USAGE
 
+  $ wget -O /tmp/ntos-image.tar.gz https://github.com/ntrrg/ntos/releases/download/w34/ntos-image-w34-x64.tar.gz
+  $ mkdir /tmp/image
+  # tar -xf /tmp/ntos-image.tar.gz -C /tmp/image
   $ EDITOR config.mk
-  # make
-  # make install
+  # make deps-install install
 
-Advanced usage:
+BUILD
 
-  $ EDITOR config.mk
-  # make deps
-  # make rootfs
-  # make login
-  # make rootfs-clean
-  # [NO_DEBIAN_INSTALLER=true] [ISO_URL=CUSTOM_ISO_URL] make image
-  # [NO_PERSISTENCE=true] make install
+  Simple:
+
+    $ EDITOR config.mk
+    # make
+    # make install
+
+  Advanced:
+
+    $ EDITOR config.mk
+    # make deps
+    # make rootfs
+    # make login
+    # [NO_DEBIAN_INSTALLER=true] [ISO_URL=CUSTOM_ISO_URL] make image
+    # [NO_PERSISTENCE=true] make install
 
 NtOS https://nt.web.ve/en/projects/ntos
 Copyright (c) 2018 Miguel Angel Rivera Notararigo

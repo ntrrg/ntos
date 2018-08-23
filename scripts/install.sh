@@ -4,13 +4,6 @@
 
 set -e
 
-# Customizable variables:
-#
-# * DEV
-# * IPN
-# * NO_PERSISTENCE
-# * PPN
-
 if [ ! -d "$IMAGE" ]; then
   echo "No image to install" > /dev/stderr
   exit 1
