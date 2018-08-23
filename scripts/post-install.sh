@@ -231,12 +231,14 @@ EOF
     dpkg -i /tmp/ntos-packages-gui/google-chrome-stable_68.0.3440.106-1_amd64.deb ||
       apt-get install -fy
 
-    # Paper Icon Theme
+    # Paper Theme
 
     dpkg -i /tmp/ntos-packages-gui/paper-icon-theme_1.5.721-201808151353~daily~ubuntu18.04.1_all.deb ||
       apt-get install -fy
 
-    rm -rf /tmp/ntos-packages-gui
+    tar -xf /tmp/ntos-packages-gui/paper-gtk-theme.tar.gz -C /tmp/
+    (cd /tmp/paper-gtk-theme-master && ./install-gtk-theme.sh)
+    rm -rf /tmp/paper-gtk-theme-master
     ;;
 esac
 
@@ -248,4 +250,4 @@ apt-get autoremove -y > /dev/null
 # shellcheck disable=SC2046
 (cd /var/log && rm -rf $(ls -A))
 
-rm -rf /tmp/ntos-packages-common
+rm -rf /tmp/ntos-packages-common /tmp/ntos-packages-gui
