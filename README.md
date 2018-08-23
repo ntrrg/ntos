@@ -2,7 +2,7 @@
 
 **NtOS** is a Debian live system with encrypted persistence by default. It is
 attached at the Debian testing release cycle, so there are no version numbers
-nor release names, just weekly bui:tabelds.
+nor release names, just weekly builds.
 
 **Requirements:**
 
