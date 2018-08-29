@@ -1,7 +1,7 @@
 include config.mk
 
 .PHONY: all
-all: deps image
+all: deps rootfs image
 
 .PHONY: ci
 ci: lint
