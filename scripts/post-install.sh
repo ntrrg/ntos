@@ -5,7 +5,7 @@
 set -e
 
 MODE="${MODE:-TEXT}"
-WEEK="${WEEK:-34}"
+WEEK="${WEEK:-36}"
 MIRROR="${MIRROR:-https://github.com/ntrrg/ntos/releases/download/w$WEEK}"
 
 apt-get update
@@ -21,6 +21,7 @@ apt-get install -y \
   htop \
   iftop \
   isc-dhcp-client \
+  jq \
   lbzip2 \
   lvm2 \
   netselect \
@@ -34,7 +35,9 @@ apt-get install -y \
   siege \
   ssh \
   sshfs \
+  transmission-cli \
   usbutils \
+  vbetool \
   wget \
   zsh
 
@@ -128,6 +131,11 @@ chmod +x /etc/init.d/noip2
 
 case "$MODE" in
   "TEXT" )
+    wget -cO /tmp/ntos-packages-gui.tar.gz \
+      "$MIRROR/ntos-packages-text-w$WEEK-x64.tar.gz"
+
+    tar -xf /tmp/ntos-packages-text.tar.gz -C /tmp/
+
     # Vim
 
     apt-get install -y \
@@ -138,6 +146,12 @@ case "$MODE" in
     tar -xf /tmp/ntos-packages-common/vim-8.1.tar.bz2 -C /tmp/
     (cd /tmp/vim81 && ./configure && make && make install)
     rm -rf /tmp/vim81
+
+    # MEGAcmd
+
+    dpkg -i /tmp/ntos-packages-text/megacmd_0.9.9+8.1_amd64.deb ||
+      apt-get install -fy || true
+
     ;;
 
   "GUI" )
@@ -155,6 +169,7 @@ case "$MODE" in
       inkscape \
       simple-scan \
       system-config-printer \
+      transmission \
       vlc \
       wicd \
       xfce4 \
@@ -220,6 +235,7 @@ EOF
     # Telegram
 
     tar -xf /tmp/ntos-packages-gui/tsetup.1.3.10.tar.xz -C /opt/
+    ln -s /opt/Telegram/Telegram /usr/bin/telegram
 
     # MEGA
 

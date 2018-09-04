@@ -8,7 +8,7 @@ ci: lint
 
 .PHONY: clean
 clean:
-	@rm -f .make/vendor/shellcheck
+	@rm -f .make/bin/shellcheck
 	@rm -rf "$(rootfs)" "$(image)" /tmp/debian.iso
 	@rm -rf dist/*.tar.gz
 
@@ -17,9 +17,9 @@ deps: deps-rootfs deps-image deps-install
 
 .PHONY: dist
 dist: $(rootfs) $(image)
-	cd $(rootfs) && tar -czf "$$OLDPWD/dist/ntos-rootfs-w34-x64.tar.gz" .
+	cd $(rootfs) && tar -czf "$$OLDPWD/dist/ntos-rootfs-w36-x64.tar.gz" .
 	@rm -rf "$(image)/syslinux/syslinux.cfg" "$(image)/EFI/boot/syslinux.cfg"
-	cd $(image) && tar -czf "$$OLDPWD/dist/ntos-image-w34-x64.tar.gz" .
+	cd $(image) && tar -czf "$$OLDPWD/dist/ntos-image-w36-x64.tar.gz" .
 	@$(MAKE) -s image
 
 .PHONY: help
@@ -84,14 +84,14 @@ install: image
 deps-dev: .make/vendor/shellcheck
 
 .PHONY: lint
-lint: .make/vendor/shellcheck
+lint: .make/bin/shellcheck
 	$< -s sh \
-		$$(find .make/bin -name "*.sh" -exec echo {} +) \
+		$$(find .make/scripts/ -name "*.sh" -exec echo {} +) \
 		$$(find scripts/ -name "*.sh" -exec echo {} +)
 
 .PHONY: lint-md
 lint-md:
 	@docker run --rm -it -v "$$PWD":/files/ ntrrg/md-linter
 
-.make/vendor/shellcheck:
-	@RELEASE=$(shellcheck_release) DEST=$@ .make/bin/install-shellcheck.sh
+.make/bin/shellcheck: .make/scripts/install-shellcheck.sh
+	@RELEASE=$(shellcheck_release) DEST=$@ $<

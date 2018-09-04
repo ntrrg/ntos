@@ -4,20 +4,20 @@
 attached at the Debian testing release cycle, so there are no version numbers
 nor release names, just weekly builds.
 
+See <https://nt.web.ve/en/projects/ntos>.
+
+## Usage
+
 **Requirements:**
 
 * Debian GNU/Linux 10 (Buster)
 
 * GNU Make
 
-See <https://nt.web.ve/en/projects/ntos>.
-
-## Usage
-
 1\. Get the image
 
 ```shell-session
-$ wget -O /tmp/ntos-image.tar.gz https://github.com/ntrrg/ntos/releases/download/w34/ntos-image-w34-x64.tar.gz
+$ wget -O /tmp/ntos-image.tar.gz https://github.com/ntrrg/ntos/releases/download/w36/ntos-image-w36-x64.tar.gz
 ```
 
 ```shell-session
@@ -41,6 +41,12 @@ $ EDITOR config.mk
 ```
 
 ## Build
+
+**Requirements:**
+
+* Debian GNU/Linux 10 (Buster)
+
+* GNU Make
 
 1\. Setup the parameters
 
