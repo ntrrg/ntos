@@ -24,6 +24,7 @@ apt-get install -y \
   jq \
   lbzip2 \
   lvm2 \
+  mosh \
   netselect \
   ntfs-3g \
   p7zip-full \
