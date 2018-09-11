@@ -17,9 +17,9 @@ deps: deps-rootfs deps-image deps-install
 
 .PHONY: dist
 dist: $(rootfs) $(image)
-	cd $(rootfs) && tar -czf "$$OLDPWD/dist/ntos-rootfs-w36-x64.tar.gz" .
+	cd $(rootfs) && tar -czf "$$OLDPWD/dist/ntos-rootfs-w37-x64.tar.gz" .
 	@rm -rf "$(image)/syslinux/syslinux.cfg" "$(image)/EFI/boot/syslinux.cfg"
-	cd $(image) && tar -czf "$$OLDPWD/dist/ntos-image-w36-x64.tar.gz" .
+	cd $(image) && tar -czf "$$OLDPWD/dist/ntos-image-w37-x64.tar.gz" .
 	@$(MAKE) -s image
 
 .PHONY: help
