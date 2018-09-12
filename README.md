@@ -17,7 +17,7 @@ See <https://nt.web.ve/en/projects/ntos>.
 1\. Get the image
 
 ```shell-session
-$ wget -O /tmp/ntos-image.tar.gz https://github.com/ntrrg/ntos/releases/download/w36/ntos-image-w36-x64.tar.gz
+$ wget -O /tmp/ntos-image.tar.gz https://github.com/ntrrg/ntos/releases/download/w37/ntos-image-w37-x64.tar.gz
 ```
 
 ```shell-session
@@ -63,7 +63,7 @@ $ EDITOR config.mk
 3\. Install the image in a USB device
 
 ```shell-session
-# [NO_PERSISTENCE=true] make install
+# make install
 ```
 
 ## Acknowledgment
