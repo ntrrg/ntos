@@ -1,4 +1,4 @@
-week := 37
+week := 40
 
 # Rootfs
 

@@ -5,7 +5,7 @@
 set -e
 
 MODE="${MODE:-TEXT}"
-WEEK="${WEEK:-37}"
+WEEK="${WEEK:-40}"
 MIRROR="${MIRROR:-https://github.com/ntrrg/ntos/releases/download/w$WEEK}"
 
 apt-get update
