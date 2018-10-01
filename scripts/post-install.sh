@@ -236,7 +236,7 @@ EOF
     # Telegram
 
     tar -xf /tmp/ntos-packages-gui/tsetup.1.3.10.tar.xz -C /opt/
-    ln -s /opt/Telegram/Telegram /usr/bin/telegram
+    ln -sf /opt/Telegram/Telegram /usr/bin/telegram
 
     # MEGA
 

@@ -1,3 +1,7 @@
+week := 37
+
+# Rootfs
+
 rootfs := /tmp/rootfs
 mirror := http://deb.debian.org/debian
 packages := \
@@ -12,6 +16,8 @@ packages := \
 	systemd-sysv, \
 	wpasupplicant
 
+# Image
+
 image := /tmp/image
 hostname := NtFlash
 username := ntrrg
@@ -19,4 +25,5 @@ timezone := America/Caracas
 
 # Development
 
+make_bin := /tmp/$(shell basename "$$PWD")-bin
 shellcheck_release := 0.4.7

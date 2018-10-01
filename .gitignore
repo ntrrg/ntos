@@ -5,7 +5,5 @@ Session.vim
 nogit-*
 .DS_Store
 .screenrc
-.make/bin/shellcheck
-dist/ntos-packages-common
-dist/ntos-packages-gui
-dist/*.tar.gz
+.make/bin/
+dist/
