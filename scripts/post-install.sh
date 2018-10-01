@@ -63,7 +63,7 @@ chmod +x /bin/busybox
 
 # Docker
 
-dpkg -i /tmp/ntos-packages-common/docker-ce_18.03.1~ce-0~debian_amd64.deb ||
+dpkg -i /tmp/ntos-packages-common/docker-ce_18.06.1_ce_3-0_debian_amd64.deb ||
   apt-get install -fy
 
 # Docker Compose
