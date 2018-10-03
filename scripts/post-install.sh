@@ -43,7 +43,7 @@ apt-get install -y \
   zsh
 
 if lspci | grep -q "Network controller"; then
-  apt-get install -y rfkill wpasupplicant
+  apt-get install -y rfkill wireless-tools wpasupplicant
 fi
 
 wget -cO /tmp/ntos-packages-common.tar.gz \

@@ -14,6 +14,7 @@ packages := \
 	lvm2, \
 	rfkill, \
 	systemd-sysv, \
+	wireless-tools, \
 	wpasupplicant
 
 # Image
