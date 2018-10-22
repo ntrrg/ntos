@@ -150,7 +150,7 @@ case "$MODE" in
 
     # MEGAcmd
 
-    dpkg -i /tmp/ntos-packages-text/megacmd_0.9.9+8.1_amd64.deb ||
+    dpkg -i /tmp/ntos-packages-text/megacmd_1.0.0+4.1_amd64.deb ||
       apt-get install -fy || true
     ;;
 
