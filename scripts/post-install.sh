@@ -239,7 +239,7 @@ EOF
 
     # MEGA
 
-    dpkg -i /tmp/ntos-packages-gui/megasync_3.6.7+1.1_amd64.deb ||
+    dpkg -i /tmp/ntos-packages-gui/megasync_3.7.1+3.1_amd64.deb ||
       apt-get install -fy
 
     # Chrome
