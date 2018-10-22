@@ -5,7 +5,7 @@
 set -e
 
 MODE="${MODE:-TEXT}"
-WEEK="${WEEK:-41}"
+WEEK="${WEEK:-43}"
 MIRROR="${MIRROR:-https://github.com/ntrrg/ntos/releases/download/w$WEEK}"
 
 apt-get update
@@ -152,7 +152,6 @@ case "$MODE" in
 
     dpkg -i /tmp/ntos-packages-text/megacmd_0.9.9+8.1_amd64.deb ||
       apt-get install -fy || true
-
     ;;
 
   "GUI" )
