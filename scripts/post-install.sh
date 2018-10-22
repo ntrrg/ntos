@@ -244,7 +244,7 @@ EOF
 
     # Chrome
 
-    dpkg -i /tmp/ntos-packages-gui/google-chrome-stable_68.0.3440.106-1_amd64.deb ||
+    dpkg -i /tmp/ntos-packages-gui/google-chrome-stable_70.0.3538.67-1_amd64.deb ||
       apt-get install -fy
 
     # Paper Theme
