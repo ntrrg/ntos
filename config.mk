@@ -1,4 +1,4 @@
-week := 46
+week := 46.1
 
 # Rootfs
 

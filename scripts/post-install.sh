@@ -5,7 +5,7 @@
 set -e
 
 MODE="${MODE:-TEXT}"
-WEEK="${WEEK:-46}"
+WEEK="${WEEK:-46.1}"
 MIRROR="${MIRROR:-https://github.com/ntrrg/ntos/releases/download/w$WEEK}"
 
 apt-get update
@@ -63,7 +63,9 @@ chmod +x /bin/busybox
 
 # Docker
 
-dpkg -i /tmp/ntos-packages-common/docker-ce_18.09.0_3-0_debian-buster_amd64.deb ||
+dpkg -i /tmp/ntos-packages-common/containerd.io_1.2.0-1_amd64.deb \
+        /tmp/ntos-packages-common/docker-ce_18.09.0_3-0_debian-buster_amd64.deb \
+        /tmp/ntos-packages-common/docker-ce-cli_18.09.0_3-0_debian-buster_amd64.deb ||
   apt-get install -fy
 
 # Docker Compose
@@ -142,6 +144,7 @@ case "$MODE" in
     tar -xf /tmp/ntos-packages-common/vim-8.1.tar.bz2 -C /tmp/
     (cd /tmp/vim81 && ./configure && make && make install)
     rm -rf /tmp/vim81
+    ;;
 
   "GUI" )
     wget -cO /tmp/ntos-packages-gui.tar.gz \
