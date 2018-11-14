@@ -5,7 +5,7 @@
 set -e
 
 MODE="${MODE:-TEXT}"
-WEEK="${WEEK:-43}"
+WEEK="${WEEK:-46}"
 MIRROR="${MIRROR:-https://github.com/ntrrg/ntos/releases/download/w$WEEK}"
 
 apt-get update
@@ -63,20 +63,20 @@ chmod +x /bin/busybox
 
 # Docker
 
-dpkg -i /tmp/ntos-packages-common/docker-ce_18.06.1_ce_3-0_debian_amd64.deb ||
+dpkg -i /tmp/ntos-packages-common/docker-ce_18.09.0_3-0_debian-buster_amd64.deb ||
   apt-get install -fy
 
 # Docker Compose
 
-cp -f /tmp/ntos-packages-common/docker-compose-1.22.0-Linux-x86_64 \
+cp -f /tmp/ntos-packages-common/docker-compose-Linux-x86_64 \
   /usr/bin/docker-compose
 
 chmod +x /usr/bin/docker-compose
 
-cp -f /tmp/ntos-packages-common/docker-compose-1.22.0-completion-bash \
+cp -f /tmp/ntos-packages-common/docker-compose \
   /etc/bash_completion.d/docker-compose
 
-cp -f /tmp/ntos-packages-common/docker-compose-1.22.0-completion-zsh \
+cp -f /tmp/ntos-packages-common/_docker-compose \
   /usr/share/zsh/vendor-completions/_docker-compose
 
 # no-ip
@@ -132,11 +132,6 @@ chmod +x /etc/init.d/noip2
 
 case "$MODE" in
   "TEXT" )
-    wget -cO /tmp/ntos-packages-gui.tar.gz \
-      "$MIRROR/ntos-packages-text-w$WEEK-x64.tar.gz"
-
-    tar -xf /tmp/ntos-packages-text.tar.gz -C /tmp/
-
     # Vim
 
     apt-get install -y \
@@ -147,12 +142,6 @@ case "$MODE" in
     tar -xf /tmp/ntos-packages-common/vim-8.1.tar.bz2 -C /tmp/
     (cd /tmp/vim81 && ./configure && make && make install)
     rm -rf /tmp/vim81
-
-    # MEGAcmd
-
-    dpkg -i /tmp/ntos-packages-text/megacmd_1.0.0+4.1_amd64.deb ||
-      apt-get install -fy || true
-    ;;
 
   "GUI" )
     wget -cO /tmp/ntos-packages-gui.tar.gz \
@@ -237,14 +226,9 @@ EOF
     tar -xf /tmp/ntos-packages-gui/tsetup.1.4.3.tar.xz -C /opt/
     ln -sf /opt/Telegram/Telegram /usr/bin/telegram
 
-    # MEGA
-
-    dpkg -i /tmp/ntos-packages-gui/megasync_3.7.1+3.1_amd64.deb ||
-      apt-get install -fy
-
     # Chrome
 
-    dpkg -i /tmp/ntos-packages-gui/google-chrome-stable_70.0.3538.67-1_amd64.deb ||
+    dpkg -i /tmp/ntos-packages-gui/google-chrome-stable_70.0.3538.102-1_amd64.deb ||
       apt-get install -fy
 
     # Paper Theme
