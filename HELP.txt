@@ -2,7 +2,7 @@ NtOS is a Debian live system with encrypted persistence by default.
 
 USAGE
 
-  $ wget -O /tmp/ntos-image.tar.gz https://github.com/ntrrg/ntos/releases/download/w46.1/ntos-image-w46.1-x64.tar.gz
+  $ wget -O /tmp/ntos-image.tar.gz https://github.com/ntrrg/ntos/releases/download/w47/ntos-image-w47-x64.tar.gz
   $ mkdir /tmp/image
   # tar -xf /tmp/ntos-image.tar.gz -C /tmp/image
   $ EDITOR config.mk

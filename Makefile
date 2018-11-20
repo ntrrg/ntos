@@ -82,12 +82,6 @@ install: image
 
 # Development
 
-.PHONY: bump-version
-bump-version:
-	@grep -lr "$(week)" . \
-		| grep -v "\./\.git" \
-		| grep -v "\.swp$$"
-
 .PHONY: ci
 ci: lint
 

@@ -1,4 +1,4 @@
-week := 46.1
+week := 47
 
 # Rootfs
 
@@ -14,6 +14,7 @@ packages := \
 	lvm2, \
 	rfkill, \
 	systemd-sysv, \
+	wicd-curses, \
 	wireless-tools, \
 	wpasupplicant
 
@@ -22,7 +23,7 @@ packages := \
 image := /tmp/image
 hostname := NtFlash
 username := ntrrg
-timezone := America/Caracas
+timezone := America/Phoenix
 
 # Development
 

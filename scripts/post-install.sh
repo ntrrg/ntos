@@ -5,7 +5,7 @@
 set -e
 
 MODE="${MODE:-TEXT}"
-WEEK="${WEEK:-46.1}"
+WEEK="${WEEK:-47}"
 MIRROR="${MIRROR:-https://github.com/ntrrg/ntos/releases/download/w$WEEK}"
 
 apt-get update
@@ -43,7 +43,7 @@ apt-get install -y \
   zsh
 
 if lspci | grep -q "Network controller"; then
-  apt-get install -y rfkill wireless-tools wpasupplicant
+  apt-get install -y rfkill wicd-curses wireless-tools wpasupplicant
 fi
 
 wget -cO /tmp/ntos-packages-common.tar.gz \
