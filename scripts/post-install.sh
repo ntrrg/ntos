@@ -5,7 +5,7 @@
 set -e
 
 MODE="${MODE:-TEXT}"
-WEEK="${WEEK:-47}"
+WEEK="${WEEK:-50}"
 MIRROR="${MIRROR:-https://github.com/ntrrg/ntos/releases/download/w$WEEK}"
 
 apt-get update
@@ -24,6 +24,7 @@ apt-get install -y \
   jq \
   lbzip2 \
   lvm2 \
+  megatools \
   mosh \
   netselect \
   ntfs-3g \
@@ -132,9 +133,12 @@ EOF
 
 chmod +x /etc/init.d/noip2
 
+
 case "$MODE" in
   "TEXT" )
     # Vim
+
+    apt-get purge -fy vim-tiny
 
     apt-get install -y \
       gcc \
@@ -163,7 +167,7 @@ case "$MODE" in
       system-config-printer \
       transmission \
       vlc \
-      wicd \
+      wicd-gtk \
       xfce4 \
       xfce4-goodies
 
@@ -196,6 +200,8 @@ EOF
 
     # Vim
 
+    apt-get purge -fy vim-tiny
+
     apt-get install -y \
       gcc \
       libncurses-dev \
@@ -226,12 +232,12 @@ EOF
 
     # Telegram
 
-    tar -xf /tmp/ntos-packages-gui/tsetup.1.4.3.tar.xz -C /opt/
+    tar -xf /tmp/ntos-packages-gui/tsetup.1.5.1.tar.xz -C /opt/
     ln -sf /opt/Telegram/Telegram /usr/bin/telegram
 
     # Chrome
 
-    dpkg -i /tmp/ntos-packages-gui/google-chrome-stable_70.0.3538.102-1_amd64.deb ||
+    dpkg -i /tmp/ntos-packages-gui/google-chrome-stable_71.0.3578.80-1_amd64.deb ||
       apt-get install -fy
 
     # Paper Theme
