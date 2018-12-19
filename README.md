@@ -17,7 +17,7 @@ See <https://nt.web.ve/en/projects/ntos>.
 1\. Get the image
 
 ```shell-session
-$ wget -O /tmp/ntos-image.tar.gz https://github.com/ntrrg/ntos/releases/download/w50/ntos-image-w50-x64.tar.gz
+$ wget -O /tmp/ntos-image.tar.gz https://github.com/ntrrg/ntos/releases/download/w51/ntos-image-w51-x64.tar.gz
 ```
 
 ```shell-session
