@@ -32,7 +32,6 @@ login: $(rootfs)
 
 .PHONY: rootfs
 rootfs: $(rootfs) rootfs-clean
-	cp -f scripts/post-install.sh "$(rootfs)/usr/bin/"
 
 .PHONY: rootfs-clean
 rootfs-clean:
